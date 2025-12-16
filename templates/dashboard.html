@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Your Tasks</h2>
+
+<form method="post">
+    <input name="title" placeholder="New task" required>
+    <select name="priority">
+        <option>Low</option>
+        <option selected>Medium</option>
+        <option>High</option>
+    </select>
+    <button>Add Task</button>
+</form>
+
+<ul>
+{% for task in tasks %}
+    <li>
+        {% if task.completed %}
+            <s>{{ task.title }}</s>
+        {% else %}
+            {{ task.title }}
+        {% endif %}
+        ({{ task.priority }})
+        <a href="/toggle/{{ task.id }}">✔</a>
+        <a href="/delete/{{ task.id }}">❌</a>
+    </li>
+{% endfor %}
+</ul>
+
+<a href="/logout">Logout</a>
+{% endblock %}

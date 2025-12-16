@@ -1,0 +1,34 @@
+from flask import Blueprint, jsonify, request
+from flask_login import login_required, current_user
+from models import db, Task
+
+api = Blueprint("api", __name__)
+
+
+@api.route("/tasks", methods=["GET"])
+@login_required
+def get_tasks():
+    tasks = Task.query.filter_by(user_id=current_user.id).all()
+    return jsonify([
+        {
+            "id": t.id,
+            "title": t.title,
+            "priority": t.priority,
+            "completed": t.completed
+        }
+        for t in tasks
+    ])
+
+
+@api.route("/tasks", methods=["POST"])
+@login_required
+def create_task():
+    data = request.json
+    task = Task(
+        title=data["title"],
+        priority=data.get("priority", "Medium"),
+        user_id=current_user.id
+    )
+    db.session.add(task)
+    db.session.commit()
+    return jsonify({"message": "Task created"}), 201
